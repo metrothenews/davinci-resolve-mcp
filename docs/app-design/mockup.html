@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>latest avenue resolve (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.13"></script>
+<script>
+  tailwind.config = { theme: { extend: { colors: { ink: '#0a0a0a', brand: '#e5e7eb' }, fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] } } } }
+</script>
+<style type="text/tailwindcss">
+  /* Tokens copied from latest avenue: src/index.css + components/ui/Button.jsx */
+  html { background: #0a0a0a; }
+  body { @apply text-white font-sans antialiased; }
+  body::before {
+    content: ''; position: fixed; inset: 0; z-index: -1;
+    background:
+      radial-gradient(70% 55% at 50% 0%, rgba(130, 115, 255, 0.14), transparent 70%),
+      radial-gradient(50% 50% at 100% 100%, rgba(60, 170, 255, 0.06), transparent 70%),
+      #0a0a0a;
+  }
+  @layer components {
+    .glass { @apply rounded-xl border border-gray-700/50 bg-gray-900/30 backdrop-blur-md; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+    .glass-bar { @apply border-white/10 bg-black/30 backdrop-blur-md; }
+    .btn { @apply inline-flex items-center justify-center rounded-full px-4 py-2 text-sm font-semibold; }
+    .btn-secondary { @apply border border-white/15 bg-white/5 text-white backdrop-blur-md hover:bg-white/10; }
+    .tab { @apply rounded-full px-3 py-1.5 text-sm text-white/60; }
+    .tab.active { @apply bg-white/10 text-white; }
+    .key { @apply glass relative flex aspect-square w-20 flex-col items-center justify-center rounded-xl text-2xl font-bold text-white/70 hover:bg-white/10; }
+    .key.on { @apply border-white/40 bg-white/20 text-white; box-shadow: inset 0 1px 0 rgba(255,255,255,0.25); }
+    .kbd { @apply rounded-md border border-white/15 bg-white/5 px-1.5 py-0.5 font-mono text-[11px] text-white/70; }
+  }
+</style>
+</head>
+<body class="h-screen overflow-hidden">
+  <div class="flex h-full flex-col">
+
+    <!-- TOOLBAR -->
+    <header class="glass-bar shrink-0 border-b">
+      <div class="flex h-16 items-center gap-3 px-6">
+        <span class="text-lg font-extrabold tracking-tight">latest avenue</span>
+        <span class="rounded-full border border-white/15 px-2 py-0.5 text-xs text-white/60">resolve</span>
+        <nav class="ml-2 flex gap-1"><span class="tab active">Color</span></nav>
+
+        <div class="ml-4 flex items-center gap-2 border-l border-white/10 pl-4">
+          <span class="text-xs uppercase tracking-wide text-white/40">Mode</span>
+          <select class="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-white outline-none">
+            <option>night</option>
+          </select>
+        </div>
+
+        <div class="ml-4 flex items-center gap-3 border-l border-white/10 pl-4 text-sm">
+          <span class="text-white/40">Clip</span>
+          <span class="font-semibold" id="pos">9 / 24</span>
+          <span class="text-white/70" id="name">C0059.MP4</span>
+        </div>
+
+        <div class="ml-auto flex items-center gap-3">
+          <button class="btn btn-secondary">Load clips</button>
+          <div class="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-white/70">
+            <span class="h-2 w-2 rounded-full bg-white"></span>
+            Resolve Studio 20.2.3 <span class="text-white/30">·</span> Nov 11 2026 <span class="text-white/30">›</span> <span class="text-white">Timeline 1</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- PREVIEW -->
+    <main class="flex min-h-0 flex-1 flex-col items-center justify-center gap-6 px-6 py-6">
+      <div class="glass relative flex min-h-0 flex-1 items-center justify-center overflow-hidden p-2">
+        <img id="frame" class="h-full max-h-full w-auto rounded-lg object-contain" alt="Frame at 1 second" src="frames/c09_0.jpg">
+        <div class="absolute left-5 top-5 rounded-full border border-white/15 bg-black/50 px-3 py-1 text-xs font-semibold backdrop-blur-md" id="lutlabel">no LUT</div>
+        <div class="absolute right-5 top-5 hidden rounded-full border border-white/25 bg-white/20 px-3 py-1 text-xs font-semibold backdrop-blur-md" id="applied"></div>
+        <div class="absolute bottom-5 left-5 rounded-full border border-white/10 bg-black/50 px-3 py-1 text-xs text-white/60 backdrop-blur-md">frame at 1 s</div>
+
+        <!-- End of group -->
+        <div id="done" class="absolute inset-0 hidden items-center justify-center bg-black/60 backdrop-blur-md">
+          <div class="glass max-w-md p-8 text-center">
+            <h2 class="text-2xl font-bold tracking-tight">First pass done</h2>
+            <p class="mt-2 text-white/60" id="donetext"></p>
+            <div class="mt-6 flex justify-center gap-2"><button class="btn btn-secondary" id="restart">Back to first clip</button><button class="btn btn-secondary">Load clips</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1-8 KEYS -->
+      <div class="flex shrink-0 flex-col items-center gap-4">
+        <div class="flex gap-3" id="keys"></div>
+        <p class="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-white/50">
+          <span><span class="kbd">1</span>–<span class="kbd">4</span> <span class="kbd">7</span>–<span class="kbd">0</span> preview NIGHT 1–8</span>
+          <span><span class="kbd">⌫</span> no LUT</span>
+          <span><span class="kbd">space</span> apply &amp; next clip</span>
+          <span><span class="kbd">←</span> <span class="kbd">→</span> move without applying</span>
+        </p>
+      </div>
+    </main>
+  </div>
+
+<script>
+  // Sketch data: real frames from clips 9–14 of Timeline 1, grabbed from Resolve at 1 s,
+  // with the real NIGHT_1–8 LUTs applied by ffmpeg. The app would do this for every clip.
+  const clips = [[9, 'C0059.MP4'], [10, 'C0060.MP4'], [11, 'C0061.MP4'], [12, 'C0062.MP4'], [13, 'C0063.MP4'], [14, 'C0064.MP4']]
+  const applied = {}   // clip index -> LUT number
+  let i = 0, lut = 0
+
+  // Keyboard key -> LUT number. Left hand 1–4, right hand 7–0; LUT names stay 1–8.
+  const KEYMAP = { '1': 1, '2': 2, '3': 3, '4': 4, '7': 5, '8': 6, '9': 7, '0': 8 }
+  const keys = document.getElementById('keys')
+  const keyBtn = ([k, n]) => `<button class="key" data-n="${n}">${k}<span class="mt-0.5 text-[10px] font-medium uppercase tracking-wide text-white/40">night ${n}</span></button>`
+  const entries = Object.entries(KEYMAP).sort((a, b) => a[1] - b[1])
+  keys.innerHTML = entries.slice(0, 4).map(keyBtn).join('') + '<div class="w-10"></div>' + entries.slice(4).map(keyBtn).join('')
+  keys.addEventListener('click', e => { const b = e.target.closest('.key'); if (b) preview(+b.dataset.n) })
+
+  function render() {
+    const [num, name] = clips[i]
+    document.getElementById('pos').textContent = `${num} / 24`
+    document.getElementById('name').textContent = name
+    document.getElementById('frame').src = `frames/c${String(num).padStart(2, '0')}_${lut}.jpg`
+    document.getElementById('lutlabel').textContent = lut ? `NIGHT ${lut}` : 'no LUT'
+    keys.querySelectorAll('.key').forEach(k => k.classList.toggle('on', +k.dataset.n === lut))
+    const a = document.getElementById('applied')
+    a.classList.toggle('hidden', !applied[i]); a.textContent = applied[i] ? `applied: NIGHT ${applied[i]}` : ''
+  }
+  function preview(n) { lut = n; render() }
+  function go(to) { i = Math.max(0, Math.min(clips.length - 1, to)); lut = applied[i] || 0; render() }
+  function applyNext() {
+    if (lut) applied[i] = lut   // app: SetLUT on node 1 in Resolve, in the background
+    if (i === clips.length - 1) {
+      const n = Object.keys(applied).length
+      document.getElementById('donetext').textContent = `${n} of ${clips.length} clips have a NIGHT LUT applied in Resolve. Carry on with manual adjustments there.`
+      document.getElementById('done').classList.replace('hidden', 'flex')
+    } else go(i + 1)
+  }
+  document.getElementById('restart').addEventListener('click', () => { document.getElementById('done').classList.replace('flex', 'hidden'); go(0) })
+
+  document.addEventListener('keydown', e => {
+    if (e.key in KEYMAP) preview(KEYMAP[e.key])
+    else if (e.key === 'Backspace') preview(0)
+    else if (e.key === ' ') { e.preventDefault(); applyNext() }
+    else if (e.key === 'ArrowRight') go(i + 1)
+    else if (e.key === 'ArrowLeft') go(i - 1)
+  })
+  render()
+</script>
+</body>
+</html>
