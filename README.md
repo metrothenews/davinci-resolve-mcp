@@ -15,6 +15,15 @@ Color grading a batch of clips by hand is slow and repetitive. This project wrap
 
 **Status:** the workflows and desktop app are done. The MCP server wrapper is next, and the workflow interfaces were designed for it.
 
+## Applications at scale
+
+- **A tool layer for agentic post-production.** Professional editing software is a GUI that models can't operate. Wrapping it in typed, dry-run-able functions is what turns "an LLM that can talk about color" into an agent that can grade a timeline. Each workflow here maps one-to-one onto an MCP tool definition.
+- **Human-in-the-loop by design.** The app's loop is propose → preview → approve with one key. That's the interaction pattern for AI-assisted creative tools: swap the fixed set of 8 LUTs for model-suggested looks and the UI, the apply step and the undo trail stay the same.
+- **Preference data as a by-product.** Every choice is logged (`history/color_log.jsonl`: which clip, which look was applied). At scale that's labelled data for learning a creator's or a brand's grading taste.
+- **Who needs it.** Creators and small studios who can't staff a colorist, and agencies that grade high volumes of footage to a consistent brand look.
+
+**What it demonstrates:** API design for LLM tool use, working around an undocumented third-party API, numerical image processing (3D LUT composition), desktop UI engineering, safe and reversible automation.
+
 There are two parts:
 
 - **The app** (`app/`): a desktop app with a Color tab (fast, keyboard-driven first pass of color) and a Crop tab (one click zooms every clip). Double-click `start.command`. See [docs/app.md](docs/app.md).
