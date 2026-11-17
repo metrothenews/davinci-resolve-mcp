@@ -1,6 +1,12 @@
 # DaVinci Resolve MCP
 
-**Programmatic control of DaVinci Resolve Studio, built as composable tools that an AI agent can call.**
+**Look consistency at volume: tooling that applies a defined color system across every clip in a timeline, with a person's eye making each call.**
+
+Built for the part of production where taste matters and repetition doesn't: reviewing a batch, choosing the right look for each shot, and keeping the whole set on one visual language.
+
+- **A look system, not one-off grades.** Eight look LUTs and eight color-balance LUTs combine into 64 consistent treatments. Color balance is separated from contrast and saturation, so a shot can be corrected without drifting off the look.
+- **Fast curation.** Step through every clip, compare options with single key presses, approve with space. It's built for judging many outputs quickly and telling the right one from the nearly right one.
+- **Automation underneath.** The same operations are scriptable, dry-run-able tools, designed so an AI agent can call them (MCP-ready).
 
 Color grading a batch of clips by hand is slow and repetitive. This project wraps Resolve's scripting API in small, typed, dry-run-able workflows (LUT export and layering, color-only LUT extraction, timeline-wide zoom), then puts a fast keyboard-driven desktop app on top for the human pass. Every workflow returns structured results and can run from the CLI, from Python, or as a tool in an MCP server, so an agent like Claude can operate an editing session directly.
 
